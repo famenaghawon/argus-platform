@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Basic YWRtaW46ZGlzdHJpY3Q=
+      connection:
+      - keep-alive
+      host:
+      - play.im.dhis2.org
+      user-agent:
+      - argus-platform/0.2 (+https://github.com/famenaghawon/argus-platform; public
+        health research)
+    method: GET
+    uri: https://play.im.dhis2.org/stable-2-40-12/api/analytics.json?dimension=dx%3Ap4K11MFEWtw&dimension=ou%3AImspTQPwCqd&dimension=pe%3ALAST_12_MONTHS&displayProperty=NAME
+  response:
+    body:
+      string: '{"headers":[{"name":"dx","column":"Data","valueType":"TEXT","type":"java.lang.String","hidden":false,"meta":true},{"name":"ou","column":"Organisation
+        unit","valueType":"TEXT","type":"java.lang.String","hidden":false,"meta":true},{"name":"pe","column":"Period","valueType":"TEXT","type":"java.lang.String","hidden":false,"meta":true},{"name":"value","column":"Value","valueType":"NUMBER","type":"java.lang.Double","hidden":false,"meta":false}],"metaData":{"items":{"pcKjEElpvqd":{"name":"Under
+        5 years"},"202608":{"name":"August 2026"},"p4K11MFEWtw":{"name":"Inpatient
+        malaria cases"},"202609":{"name":"September 2026"},"ou":{"name":"Organisation
+        unit"},"202606":{"name":"June 2026"},"202607":{"name":"July 2026"},"202604":{"name":"April
+        2026"},"202605":{"name":"May 2026"},"202602":{"name":"February 2026"},"202603":{"name":"March
+        2026"},"202512":{"name":"December 2025"},"202601":{"name":"January 2026"},"JkCyl4FMPVz":{"name":"5
+        years and above"},"202510":{"name":"October 2025"},"202511":{"name":"November
+        2025"},"LAST_12_MONTHS":{"name":"Last 12 months"},"ImspTQPwCqd":{"name":"Sierra
+        Leone"},"dx":{"name":"Data"},"pe":{"name":"Period"}},"dimensions":{"dx":["p4K11MFEWtw"],"pe":["202510","202511","202512","202601","202602","202603","202604","202605","202606","202607","202608","202609"],"ou":["ImspTQPwCqd"],"co":["pcKjEElpvqd","JkCyl4FMPVz"]}},"rowContext":{},"rows":[["p4K11MFEWtw","ImspTQPwCqd","202511","2"],["p4K11MFEWtw","ImspTQPwCqd","202510","28"]],"height":2,"width":4,"headerWidth":4}'
+    headers:
+      cache-control:
+      - max-age=1209600, public
+      connection:
+      - keep-alive
+      content-length:
+      - '1498'
+      content-security-policy:
+      - frame-ancestors 'self' http://localhost:8083 http://localhost:8080 https://*.netlify.dhis2.org
+        http://localhost:8082 http://localhost:8081 https://dhis2.stoplight.io http://localhost:3000
+        http://localhost:9000;
+      content-type:
+      - application/json;charset=UTF-8
+      date:
+      - Fri, 23 Oct 2026 22:38:53 GMT
+      etag:
+      - '"04e8722fdb0caf2862de5552bbf93381d"'
+      set-cookie:
+      - JSESSIONID=F1FC70A73091ABD87119565D537D5B64; Path=/stable-2-40-12; Secure;
+        HttpOnly; SameSite=Lax
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains
+      x-content-type-options:
+      - nosniff
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+version: 1

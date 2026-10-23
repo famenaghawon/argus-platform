@@ -1,0 +1,2 @@
+# VCR cassettes: treat as binary so diffs don't explode in the UI
+tests/integration/cassettes/** linguist-generated=true -diff

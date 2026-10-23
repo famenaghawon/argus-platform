@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.idea/
+.vscode/
+*.env
+.env
+data/cache/
+data/*.parquet
+# Local debugging scaffolding
+cookies.txt
+*.cookies
+fix_*.ps1
+probe_*.py
+test_*.ps1
