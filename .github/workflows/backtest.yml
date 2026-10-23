@@ -2,8 +2,8 @@ name: Backtest
 
 on:
   schedule:
-    - cron: "0 3 * * *"       # 03:00 UTC nightly
-  workflow_dispatch:           # manual trigger from GitHub UI
+    - cron: "0 3 * * *"
+  workflow_dispatch:
 
 jobs:
   backtest:
@@ -22,5 +22,5 @@ jobs:
           if [ -f src/argus/evaluation/backtest.py ]; then
             python -m argus.evaluation.backtest || echo "backtest skipped (not yet implemented)"
           else
-            echo "backtest.py not yet implemented — scheduled job is a placeholder"
+            echo "backtest.py not yet implemented — placeholder only"
           fi
