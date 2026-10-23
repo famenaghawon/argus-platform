@@ -21,4 +21,4 @@ jobs:
       - name: Lint
         run: ruff check src tests || true
       - name: Test
-        run: pytest tests/integration -v
+        run: pytest tests/integration tests/evaluation -v
