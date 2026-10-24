@@ -58,3 +58,18 @@ def test_metrics_endpoint():
     assert "sensitivity" in data
     assert "specificity" in data
     assert "false_alarm_rate" in data
+
+@pytest.mark.vcr(
+    cassette_library_dir=str(CASSETTE_DIR),
+    record_mode="once",
+    match_on=["method", "scheme", "host", "path"],
+)
+def test_backtest_endpoint_hybrid():
+    # warmup=10 keeps training fast (only 80 test weeks × 40 epochs of a tiny net)
+    response = client.get("/backtest?state=CA&warmup=10&model=hybrid")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["geo_id"] == "US-CA"
+    assert len(data["results"]) > 0
+    assert all("threshold" in r and "alert" in r for r in data["results"])
+

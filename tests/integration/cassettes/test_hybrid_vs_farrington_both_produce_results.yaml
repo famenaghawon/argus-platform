@@ -1,0 +1,111 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - text/csv
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - data.cdc.gov
+      user-agent:
+      - argus-platform/0.2 (+https://github.com/famenaghawon/argus-platform; public
+        health research)
+    method: GET
+    uri: https://data.cdc.gov/resource/g653-rqe2.csv?%24where=lower(key_plot_id)+like+%27%25_ca_%25%27&%24order=date+ASC&%24limit=50000
+  response:
+    body:
+      string: !!binary |
+        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
+        hFxBQOA/HOT/1S3/BXcDVPBqSwAA
+    headers:
+      access-control-allow-origin:
+      - '*'
+      connection:
+      - keep-alive
+      content-encoding:
+      - gzip
+      content-type:
+      - text/csv; charset=UTF-8
+      date:
+      - Sat, 24 Oct 2026 00:49:30 GMT
+      etag:
+      - '"aW5kaWEuMzY5OF8zXzExMTJvVWxIYlZ4Rm1Ub1VHbnpiUUR0VlhHZUZnZHc---gziqxBMVkgABGjPhylj9YmUSNQxOKjQ--gzip--gzip"'
+      last-modified:
+      - Fri, 07 Aug 2026 16:43:15 GMT
+      server:
+      - nginx
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains
+      transfer-encoding:
+      - chunked
+      vary:
+      - Accept-Encoding
+      x-socrata-region:
+      - aws-us-east-1-fedramp-prod
+      x-socrata-requestid:
+      - 52332830e057691511a52855ee922b0d
+      x-soda2-data-out-of-date:
+      - 'false'
+      x-soda2-fields:
+      - '["key_plot_id","date","pcr_conc_lin","normalization"]'
+      x-soda2-secondary-last-modified:
+      - Fri, 07 Aug 2026 16:43:15 GMT
+      x-soda2-truth-last-modified:
+      - Fri, 07 Aug 2026 16:43:15 GMT
+      x-soda2-types:
+      - '["text","text","number","text"]'
+    status:
+      code: 200
+      message: OK
+version: 1
