@@ -1,0 +1,3 @@
+"""Training script: fit SEIR + residual on a cassette, save weights to MLflow."""
+def train_on_series(series: np.ndarray, save_path: Path = None):
+    ...
