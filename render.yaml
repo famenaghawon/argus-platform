@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: argus-platform-api
+    env: docker
+    plan: free 
+    region: ohio 
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
