@@ -1,0 +1,13 @@
+{
+  "description": "Synthetic weekly counts with a 3-week outbreak spike at weeks 40-42",
+  "weeks": [
+    100, 105, 98, 110, 95, 102, 108, 99, 105, 100,
+    103, 96, 104, 109, 101, 97, 105, 102, 98, 100,
+    103, 107, 99, 104, 100, 96, 105, 101, 103, 108,
+    102, 98, 100, 104, 101, 107, 99, 105, 100, 320,
+    410, 390, 200, 150, 120, 110, 105, 100, 103, 98,
+    102, 106, 101, 99, 104, 100, 105, 108, 102, 100
+  ],
+  "expected_threshold_z196_weeks_1_39": 150,
+  "note": "Threshold at week 40 should be around 130-170; the spike to 320+ should breach it."
+}

@@ -19,7 +19,6 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          # Install torch CPU version first to avoid downloading 2GB CUDA libs
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev]"
           
@@ -27,4 +26,4 @@ jobs:
         run: ruff check src tests || true
         
       - name: Test
-        run: pytest tests/integration tests/evaluation tests/api -v
+        run: pytest tests/unit tests/fixtures tests/integration tests/evaluation tests/api -v

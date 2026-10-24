@@ -1,0 +1,1 @@
+"""Fast unit tests — no network, no cassettes, no I/O."""

@@ -1,7 +1,7 @@
 """Common Observation contract every ingestor must satisfy."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Literal, Protocol
 
@@ -44,7 +44,7 @@ class Observation(BaseModel):
     value: float
     unit: str | None = None
     provenance_url: str | None = None
-    ingested_at: datetime = Field(default_factory=datetime.utcnow)
+    ingested_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     @field_validator("timestamp", "ingested_at")
     @classmethod
