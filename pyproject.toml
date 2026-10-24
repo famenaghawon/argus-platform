@@ -45,6 +45,12 @@ dev = [
     "mypy>=1.10",
 ]
 
+dashboard = [
+    "streamlit>=1.32",
+    "plotly>=5.18",
+    "requests>=2.31"
+]
+
 [project.scripts]
 argus = "argus.cli:app"
 

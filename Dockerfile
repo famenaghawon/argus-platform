@@ -13,7 +13,6 @@ COPY src ./src
 # Install the package + dev deps (torch is not needed for the API alone,
 # but we include it so /backtest?model=hybrid works)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -e .
 
 EXPOSE 8000
