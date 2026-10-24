@@ -10,7 +10,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23611284.svg)](https://doi.org/10.5281/zenodo.23611284)
 
-*Fuses wastewater, clinical, and open-source event data into a unified weekly signal, detects outbreaks with statistically rigorous baselines and hybrid neural-mechanistic models, and exposes everything through a validated FastAPI service.*
+*Fuses wastewater, clinical, and open-source event data into a unified weekly signal, detects outbreaks with statistically rigorous baselines and hybrid neural-mechanistic models, and exposes everything through a validated FastAPI service and a premium telemetry dashboard.*
+
+**👉 [Live Production API](https://api.savflux.com/docs) &nbsp;·&nbsp; [Dashboard Guide](#-command-deck-dashboard)**
 
 </div>
 
@@ -23,7 +25,8 @@ Argus is a **research-grade data-fusion and outbreak-detection platform**, not a
 ### What It Is
 - ✅ A **verifiable** multi-source ingestion pipeline with recorded HTTP cassettes proving every live data fetch
 - ✅ A **tested** detection tier: statistically classical (Farrington) and hybrid neural-mechanistic (SEIR + residual)
-- ✅ A **deployable** API service with structured logging, health checks, and Docker containerization
+- ✅ A **deployable** API service with structured logging, health checks, Cloudflare edge routing, and Docker containerization
+- ✅ A **real-time comparison dashboard** (Streamlit) that overlays statistical and neural thresholds side-by-side
 - ✅ **Standards-aware**: reads DHIS2 Web API and FHIR R4, writes into an `Observation` contract designed for interoperability
 
 ### What It Is Not
@@ -90,17 +93,53 @@ Argus is a **research-grade data-fusion and outbreak-detection platform**, not a
 │   │        FastAPI Service  ( /observations /backtest /alerts )        │     │
 │   │     Model selection:  ?model=farrington   ?model=hybrid            │     │
 │   └───────────────────────────────────────────────────────────────────┘     │
+│                               │                                             │
+│                               ▼                                             │
+│   ┌───────────────────────────────────────────────────────────────────┐     │
+│   │  Streamlit "Command Deck"  — dual-threshold overlay + metrics      │     │
+│   └───────────────────────────────────────────────────────────────────┘     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🖥️ Command Deck Dashboard
+
+Argus ships with a premium Streamlit dashboard — a dedicated **command deck** for surveillance analysts. It does not duplicate logic; it is a pure client that queries the live API and renders the results in a dark, glassmorphic UI inspired by biodefense operations centers.
+
+### Features
+- **Dual-threshold overlay** — see the classical Farrington threshold (amber dotted) and the hybrid SEIR+NN threshold (purple dashed) on the same chart, at the same time
+- **Alert markers** — red circles for Farrington alerts, yellow diamonds for hybrid alerts
+- **Detection metrics** — sensitivity, specificity, median lead time, and total alerts shown as tiles
+- **Live uplink indicator** — a pulsing status pill confirming the API is online
+- **Region selector** — CA, TX, NY, FL, GA (NWSS)
+- **Warmup slider** — tune the training window without touching code
+
+### Launch
+
+```bash
+# Terminal 1 — API
+make api
+
+# Terminal 2 — Dashboard
+pip install -e ".[dashboard]"
+streamlit run dashboard/app.py
+# → http://localhost:8501
+```
+
+The dashboard points at `https://api.savflux.com` by default. To use a local API instead, edit `API_BASE` in `dashboard/app.py`.
+
+![Argus Command Deck](docs/dashboard.png)
 
 ---
 
 ## 🚀 Quick Start
 
 ### Live API (Production)
-The API is publicly deployed via Render and Cloudflare:
+Deployed via Render, routed through Cloudflare, secured with SSL:
 👉 **[https://api.savflux.com/docs](https://api.savflux.com/docs)**
 
+*(Note: Render's free tier sleeps after 15 min of inactivity. The first request may take ~30s to wake the container.)*
 
 ### Interactive API Documentation
 ![Argus API Swagger UI](docs/swagger_screenshot.jpg)
@@ -114,9 +153,8 @@ cd argus-platform
 conda create -n argus python=3.11 -y
 conda activate argus
 
-# Install with dev dependencies
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-pip install -e ".[dev]"
+# Install core + dev + dashboard extras
+pip install -e ".[dev,dashboard]"
 
 # Run the API
 make api
@@ -142,18 +180,23 @@ curl "http://127.0.0.1:8000/observations?state=CA"
 # Farrington backtest
 curl "http://127.0.0.1:8000/backtest?state=CA&model=farrington"
 
-# Hybrid backtest (slower: trains per-week)
+# Hybrid backtest (trains per-week, slower)
 curl "http://127.0.0.1:8000/backtest?state=CA&model=hybrid&warmup=10"
 
 # Detection metrics
 curl "http://127.0.0.1:8000/alerts?state=CA&p90_window=6"
 ```
 
+Against production:
+```bash
+curl "https://api.savflux.com/backtest?state=CA&model=farrington"
+```
+
 ---
 
 ## 📦 Data Sources — Live vs. Stubbed
 
-Every row in the **Live** column has a VCR cassette in [`tests/integration/cassettes/`](tests/integration/cassettes/) proving the ingestor hit the real endpoint. CI replays those cassettes offline — the tests are deterministic and don't require network access.
+Every row in the **Live** column has a VCR cassette in [`tests/integration/cassettes/`](tests/integration/cassettes/) proving the ingestor hit the real endpoint. CI replays those cassettes offline — tests are deterministic and don't require network access.
 
 | Source | Status | Endpoint | Auth |
 |---|---|---|---|
@@ -170,10 +213,10 @@ Every row in the **Live** column has a VCR cassette in [`tests/integration/casse
 ## 🧪 Testing & Verification
 
 ```bash
-make test            # All 25 tests
+make test             # All 25 tests
 make test-integration # 5 tests · live ingestion via cassettes
-make test-eval       # 3 tests · Farrington + hybrid backtest
-make test-api        # 5 tests · HTTP endpoints via TestClient
+make test-eval        # 3 tests · Farrington + hybrid backtest
+make test-api         # 5 tests · HTTP endpoints via TestClient
 ```
 
 ```
@@ -190,11 +233,11 @@ tests/api/           5 tests · HTTP endpoints
 
 Each integration test records the exact HTTP exchange (URL, request, response) into a YAML file under `tests/integration/cassettes/`. On subsequent runs, VCR intercepts the HTTP call and replays the recorded response. Consequences:
 
-1. **CI never needs network access** — so tests are fast, deterministic, and immune to upstream endpoint changes during a test run.
-2. **The cassettes themselves are the audit artifact** — anyone can read `test_nwss_ca_returns_observations.yaml` and see the raw CDC response that the code was validated against.
-3. **When CDC/GDELT/DHIS2 change**, only the affected cassette needs re-recording — the actual assertion logic stays untouched.
+1. **CI never needs network access** — tests are fast, deterministic, and immune to upstream endpoint changes during a test run.
+2. **The cassettes themselves are the audit artifact** — anyone can read `test_nwss_ca_returns_observations.yaml` and see the raw CDC response the code was validated against.
+3. **When CDC/GDELT/DHIS2 change**, only the affected cassette needs re-recording — the assertion logic stays untouched.
 
-To record fresh cassettes (e.g., after a schema change at the source):
+To record fresh cassettes:
 
 ```bash
 rm tests/integration/cassettes/*.yaml
@@ -221,7 +264,7 @@ thresh = farrington_threshold(history, z_threshold=1.96)
 
 ### Hybrid SEIR + Residual Neural Net
 
-Mechanistic backbone (deterministic SEIR ODE) with a learned MLP residual.
+Mechanistic backbone (deterministic SEIR ODE) with a learned residual MLP. Implemented in pure NumPy so it runs in <100 MB of RAM and never blocks the free-tier Cloudflare → Render pipeline.
 
 - **Input:** weekly observed values (≥ 60 weeks recommended)
 - **Method:** SEIR prediction + learned residual on log scale + normal quantile
@@ -229,7 +272,7 @@ Mechanistic backbone (deterministic SEIR ODE) with a learned MLP residual.
 
 ```python
 from argus.models.hybrid.hybrid_model import HybridDetector
-detector = HybridDetector(epochs=40)
+detector = HybridDetector(epochs=10)
 detector.fit(train_series)
 thresh = detector.predict_threshold(train_series, z=1.96)
 ```
@@ -270,7 +313,9 @@ metrics = compute_metrics(results, p90_window=6)
 | `GET /backtest?state=CA&model=hybrid` | Same, using SEIR + residual model |
 | `GET /alerts?state=CA&p90_window=6` | Detection metrics |
 
-Full interactive docs at **`http://127.0.0.1:8000/docs`** (Swagger UI).
+Full interactive docs:
+- **Production:** [https://api.savflux.com/docs](https://api.savflux.com/docs)
+- **Local:** `http://127.0.0.1:8000/docs`
 
 ---
 
@@ -289,13 +334,15 @@ argus-platform/
 │   ├── fusion/              # Temporal/spatial alignment
 │   ├── models/
 │   │   ├── baselines/       # Farrington
-│   │   ├── hybrid/          # SEIR + ResidualNet
+│   │   ├── hybrid/          # SEIR + NumPy ResidualNet
 │   │   ├── gnn/             # (stub) Graph tier
 │   │   └── registry.py      # MLflow integration
 │   ├── evaluation/          # Backtest + metrics
 │   ├── federated/           # (stub) Flower-based FL
 │   ├── api/                 # FastAPI service
 │   └── cli.py               # `argus` command-line
+├── dashboard/
+│   └── app.py               # Streamlit command deck
 ├── tests/
 │   ├── unit/                # Pure logic, no I/O
 │   ├── fixtures/            # Synthetic outbreak data
@@ -306,11 +353,14 @@ argus-platform/
 │   ├── governance.md        # Data classification + DP
 │   ├── interoperability.md  # DHIS2/FHIR standards
 │   ├── limitations.md       # Honest known constraints
-│   └── model_cards/         # ML model documentation
+│   ├── model_cards/         # ML model documentation
+│   ├── dashboard.png        # Command deck screenshot
+│   └── swagger_screenshot.jpg
 ├── notebooks/               # Exploratory analysis
 ├── data/                    # Runtime artifacts (git-ignored)
 ├── Dockerfile
 ├── docker-compose.yml
+├── render.yaml              # Cloud deployment (Render Blueprint)
 ├── Makefile
 └── pyproject.toml
 ```
@@ -348,6 +398,21 @@ argus pipeline                      # Full fusion pipeline
 
 ---
 
+## ☁️ Deployment
+
+Argus is deployed as a Docker container on **Render**, fronted by **Cloudflare** for DNS, SSL, and edge caching.
+
+- **`render.yaml`** — Blueprint defining the service, region, and health check
+- **`Dockerfile`** — Production image, CPU-only, ~150 MB (no PyTorch dependency)
+- **Custom domain** — `api.savflux.com` via Cloudflare CNAME (proxied, orange cloud)
+
+To redeploy:
+1. Push to `main` — Render auto-rebuilds on every commit
+2. Cloudflare continues to serve the previous version until the new one is healthy
+3. Rollback is available from the Render dashboard
+
+---
+
 ## 🔒 Data Governance
 
 Argus **never stores individual-level records**. All ingestion is aggregated to `(geo_id, metric, timestamp, resolution)` before storage or transmission. The `Observation` Pydantic model enforces this at the type level.
@@ -362,6 +427,7 @@ For a full classification and DP roadmap, see [`docs/governance.md`](docs/govern
 2. `make test` must pass before submitting
 3. New ingestors require a cassette-backed integration test
 4. New models require a model card in `docs/model_cards/`
+5. New API endpoints require a test in `tests/api/`
 
 ---
 
@@ -373,7 +439,8 @@ For a full classification and DP roadmap, see [`docs/governance.md`](docs/govern
   author = {Ghawon, Famena and Contributors},
   year   = {2026},
   url    = {https://github.com/famenaghawon/argus-platform},
-  note   = {Version 0.2.0}
+  note   = {Version 0.2.0},
+  doi    = {10.5281/zenodo.23611284}
 }
 ```
 
@@ -388,5 +455,7 @@ MIT — see [LICENSE](LICENSE).
 <div align="center">
 
 **Built with rigor, not wishful thinking.**
+
+[Live API](https://api.savflux.com/docs) &nbsp;·&nbsp; [Releases](https://github.com/famenaghawon/argus-platform/releases) &nbsp;·&nbsp; [Issues](https://github.com/famenaghawon/argus-platform/issues)
 
 </div>
