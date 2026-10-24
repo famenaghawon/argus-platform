@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    image: argus-platform:0.2.0
+    ports:
+      - "8000:8000"
+    environment:
+      - ARGUS_LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped

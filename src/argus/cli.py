@@ -58,21 +58,36 @@ def fhir(bundle: str, condition: str = "59621000"):
 
 
 @app.command()
-def pipeline(geo: str = "NG", out: str = "data/fused.parquet"):
-    """Run all live ingestors, fuse, and write parquet."""
+def pipeline(
+    state: str = "CA",
+    iso: str = "NG",
+    out: str = "data/fused.parquet",
+):
+    """Run NWSS + GDELT (+ ERA5 if configured), fuse, write parquet."""
     async def _run():
         obs = []
-        obs += await GDELTIngestor().fetch(iso=geo)
-        obs += await ERA5Ingestor().fetch(geo_id=geo)
+        # NWSS (always works)
+        obs += await NWSSIngestor().fetch(state=state)
+        # GDELT (always works)
+        obs += await GDELTIngestor().fetch(iso=iso)
+        # ERA5 (only if ~/.cdsapirc exists)
+        try:
+            obs += await ERA5Ingestor().fetch(geo_id=iso)
+        except Exception as e:
+            print(f"[yellow]Skipping ERA5 (configure ~/.cdsapirc to enable): {e}[/yellow]")
         return obs
 
     observations = asyncio.run(_run())
+    if not observations:
+        print("[red]No observations returned from any source.[/red]")
+        raise typer.Exit(code=1)
+
     df = to_frame(observations)
     df = reject_negatives(drop_duplicates(df))
     df = align_weekly(df)
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out, index=False)
-    print(f"[bold green]Wrote {len(df)} fused rows → {out}[/bold green]")
+    print(f"[bold green]Wrote {len(df)} fused rows -> {out}[/bold green]")
 
 
 if __name__ == "__main__":
