@@ -97,6 +97,9 @@ Argus is a **research-grade data-fusion and outbreak-detection platform**, not a
 
 ## 🚀 Quick Start
 
+### Interactive API Documentation
+![Argus API Swagger UI](docs/swagger_screenshot.jpg)
+
 ### Option A — Local (Python)
 
 ```bash
