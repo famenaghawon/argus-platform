@@ -37,18 +37,15 @@ def run_farrington_backtest(
         current_raw = float(series["value"].iloc[i])
         current_ts = series["timestamp"].iloc[i]
 
-        # Log1p transform for Farrington's count-model assumption
-        history_log = np.log1p(history_raw)
-        current_log = float(np.log1p(current_raw))
-
-        thresh_log = farrington_threshold(history_log, z_threshold=z_threshold)
-        alert = bool(current_log > thresh_log)
+        # farrington_threshold does its own log1p internally; pass raw data
+        thresh_raw = farrington_threshold(history_raw, z_threshold=z_threshold)
+        alert = bool(current_raw > thresh_raw)
 
         out.append(
             {
                 "timestamp": current_ts,
                 "observed": current_raw,
-                "threshold": float(np.expm1(thresh_log)),
+                "threshold": thresh_raw,
                 "alert": alert,
             }
         )
