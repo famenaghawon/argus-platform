@@ -2,7 +2,7 @@ name: Backtest
 
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 3 * * *"  # Nightly at 3am UTC
   workflow_dispatch:
 
 jobs:
@@ -13,14 +13,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          
       - name: Install
         run: |
           python -m pip install --upgrade pip
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev]"
-      - name: Run backtest
-        run: |
-          if [ -f src/argus/evaluation/backtest.py ]; then
-            python -m argus.evaluation.backtest || echo "backtest skipped (not yet implemented)"
-          else
-            echo "backtest.py not yet implemented — placeholder only"
-          fi
+          
+      - name: Run evaluation suite
+        run: pytest tests/evaluation -v

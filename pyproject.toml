@@ -32,6 +32,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+models = [
+    "torch>=2.2",
+]
+
 dev = [
     "pytest>=8.1",
     "pytest-asyncio>=0.23",
