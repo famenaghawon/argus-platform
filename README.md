@@ -97,6 +97,11 @@ Argus is a **research-grade data-fusion and outbreak-detection platform**, not a
 
 ## 🚀 Quick Start
 
+### Live API (Production)
+The API is publicly deployed via Render and Cloudflare:
+👉 **[https://api.savflux.com/docs](https://api.savflux.com/docs)**
+
+
 ### Interactive API Documentation
 ![Argus API Swagger UI](docs/swagger_screenshot.jpg)
 
